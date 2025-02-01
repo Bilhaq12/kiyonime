@@ -54,7 +54,7 @@ export function AnimeList({ initialAnimeList }: AnimeListProps) {
   return (
     <section className="relative">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Recent Releases</h2>
+        <h2 className="text-xl font-bold">Recent Anime</h2>
       </div>
       <div className="group relative">
         <div
