@@ -9,7 +9,7 @@ import type React from "react"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "AnimeHi - Watch Anime Online",
+  title: "Kiyocomics - Watch Anime Online",
   description: "Watch the latest anime online in HD quality",
 }
 
@@ -26,7 +26,7 @@ export default function RootLayout({
             <Header />
             <main className="flex-grow">{children}</main>
             <footer className="py-4 text-center text-sm text-muted-foreground">
-              © 2025 AnimeHi. All rights reserved.
+              © 2025 Kiyocomics. All rights reserved.
             </footer>
           </ThemeProvider>
         </AuthProvider>
