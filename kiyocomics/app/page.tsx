@@ -12,9 +12,9 @@ export default async function Home({ searchParams }: HomeProps) {
   const animeList = await getAnimeList(page)
 
   return (
-    <div>
+    <div className="bg-[#0f0f0f] min-h-screen">
       <Hero />
-      <div className="container py-8 space-y-16">
+      <div className="container py-8 space-y-12">
         <AnimeList initialAnimeList={animeList} />
         <FeaturedCollection />
       </div>

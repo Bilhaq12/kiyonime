@@ -1,102 +1,69 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useEffect } from "react"
 import { AnimeCard } from "@/components/anime-card"
 import { Button } from "@/components/ui/button"
-import type { AnimeResponse } from "@/types/anime"
-import { ChevronLeft, ChevronRight } from "lucide-react"
+import { Error } from "@/components/ui/error"
+import { getAnimeList } from "@/lib/db"
+import type { AnimeItem } from "@/types/anime"
 
-interface AnimeListProps {
-  initialAnimeList: AnimeResponse
-}
-
-export function AnimeList({ initialAnimeList }: AnimeListProps) {
-  const [animeList, setAnimeList] = useState(initialAnimeList.data)
+export function AnimeList() {
+  const [animeList, setAnimeList] = useState<AnimeItem[]>([])
   const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(!!initialAnimeList.next_page)
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [loading, setLoading] = useState(true)
+  const [hasMore, setHasMore] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const loadMore = async () => {
-    if (loading || !hasMore) return
+  useEffect(() => {
+    loadAnime()
+  }, [])
+
+  const loadAnime = async () => {
+    if (loading && !hasMore) return
 
     setLoading(true)
-    const nextPage = page + 1
-
+    setError(null)
     try {
-      const response = await fetch(`/api/anime?page=${nextPage}`)
-      const newAnimeList: AnimeResponse = await response.json()
-
-      setAnimeList([...animeList, ...newAnimeList.data])
-      setPage(nextPage)
-      setHasMore(!!newAnimeList.next_page)
+      const newAnimeList = await getAnimeList(page)
+      setAnimeList((prev) => [...prev, ...newAnimeList])
+      setPage((prev) => prev + 1)
+      setHasMore(newAnimeList.length === 20)
     } catch (error) {
-      console.error("Failed to load more anime:", error)
+      console.error("Failed to load anime:", error)
+      setError("Failed to load anime. Please try again later.")
     } finally {
       setLoading(false)
     }
   }
 
-  const scroll = (direction: "left" | "right") => {
-    if (scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const scrollAmount = container.clientWidth * 0.8
-      const newScrollLeft =
-        direction === "left" ? container.scrollLeft - scrollAmount : container.scrollLeft + scrollAmount
-
-      container.scrollTo({
-        left: newScrollLeft,
-        behavior: "smooth",
-      })
-    }
+  if (error) {
+    return <Error message={error} />
   }
 
   return (
-    <section className="relative">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">Recent Anime</h2>
-      </div>
-      <div className="group relative">
-        <div
-          ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto overflow-y-hidden scroll-smooth pb-4 -mx-4 px-4 scrollbar-hide"
-        >
-          {animeList.map((anime) => (
-            <AnimeCard key={`${anime.param}-${anime.upload_time}`} {...anime} />
-          ))}
-          {hasMore && (
-            <button
-              onClick={loadMore}
-              disabled={loading}
-              className="flex-none w-[200px] h-[300px] flex items-center justify-center rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-800 hover:border-primary hover:bg-primary/5 transition-colors"
-            >
-              <span className="text-sm font-medium text-muted-foreground">{loading ? "Loading..." : "Load More"}</span>
-            </button>
-          )}
+    <section>
+      <h2 className="text-2xl font-bold mb-4">Recent Releases</h2>
+      {animeList.length === 0 && !loading ? (
+        <div className="text-center py-8">
+          <p className="text-lg mb-4">No anime found in the database.</p>
+          <p className="text-sm text-muted-foreground">
+            If you're an administrator, try running the database population script.
+          </p>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute left-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
-          onClick={() => scroll("left")}
-          disabled={!scrollContainerRef.current || scrollContainerRef.current.scrollLeft === 0}
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-0 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-0"
-          onClick={() => scroll("right")}
-          disabled={
-            !scrollContainerRef.current ||
-            scrollContainerRef.current.scrollLeft >=
-              scrollContainerRef.current.scrollWidth - scrollContainerRef.current.clientWidth
-          }
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+          {animeList.map((anime) => (
+            <AnimeCard key={anime.id} {...anime} />
+          ))}
+        </div>
+      )}
+      {hasMore && (
+        <div className="mt-8 text-center">
+          <Button onClick={loadAnime} disabled={loading}>
+            {loading ? "Loading..." : "Load More"}
+          </Button>
+        </div>
+      )}
     </section>
   )
 }

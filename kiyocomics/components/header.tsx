@@ -1,15 +1,19 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
-import { Moon, Sun, Search, Menu } from "lucide-react"
+import { Moon, Sun, Search, Menu, User } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { useState } from "react"
+import { AuthModal } from "@/components/auth-modal"
+import { useAuth } from "@/contexts/auth-context"
 
 export function Header() {
   const { theme, setTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+  const { user, logout } = useAuth()
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -40,6 +44,16 @@ export function Header() {
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
           </Button>
+          {user ? (
+            <Button variant="ghost" onClick={logout}>
+              Logout
+            </Button>
+          ) : (
+            <Button variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
+              <User className="mr-2 h-4 w-4" />
+              Login
+            </Button>
+          )}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle menu</span>
@@ -65,6 +79,7 @@ export function Header() {
           </nav>
         </div>
       )}
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
     </header>
   )
 }

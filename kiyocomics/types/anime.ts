@@ -1,38 +1,30 @@
-export interface AnimeResponse {
-  max_page: number
-  next_page: string | null
-  prev_page: string | null
-  data: AnimeItem[]
-}
-
 export interface AnimeItem {
+  id: string
   title: string
-  param: string
-  thumbnail: string
-  upload_time: string
-  detail_url: string
-}
-
-export interface AnimeDetail {
-  name: string
   synopsis: string
   thumbnail: string
-  episode_navigation: EpisodeNavigation[]
+  status: "ongoing" | "completed"
+  created_at: string
 }
 
-export interface EpisodeNavigation {
-  nav_name: string
-  nav_link: string
+export interface AnimeDetail extends AnimeItem {
+  episodes: EpisodeItem[]
 }
 
-export interface EpisodeDetail {
-  name: string
-  synopsis: string
+export interface EpisodeItem {
+  id: string
+  anime_id: string
+  title: string
+  episode_number: number
   thumbnail: string
-  episode_navigation: EpisodeNavigation[]
   video_embed_links: VideoLink[]
   video_mirrors: VideoLink[]
   video_direct_links: VideoDirectLink[]
+  created_at: string
+}
+
+export interface EpisodeDetail extends EpisodeItem {
+  anime: AnimeItem
 }
 
 export interface VideoLink {
