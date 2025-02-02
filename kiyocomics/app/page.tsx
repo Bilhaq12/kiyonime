@@ -1,6 +1,6 @@
 import { Hero } from "@/components/hero"
-import { AnimeCard } from "@/components/anime-card"
-import { Pagination } from "@/components/pagination"
+import { AnimeList } from "@/components/anime-list"
+import { FeaturedCollection } from "@/components/featured-collection"
 import { getAnimeList } from "@/lib/api"
 
 interface HomeProps {
@@ -12,25 +12,11 @@ export default async function Home({ searchParams }: HomeProps) {
   const animeList = await getAnimeList(page)
 
   return (
-    <div>
+    <div className="bg-[#0f0f0f] min-h-screen">
       <Hero />
-      <div className="container py-8 space-y-8">
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold">LATEST ANIME</h2>
-          </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-            {animeList.data.map((anime) => (
-              <AnimeCard key={anime.param} {...anime} />
-            ))}
-          </div>
-
-          <Pagination
-            maxPage={animeList.max_page}
-            hasNextPage={!!animeList.next_page}
-            hasPrevPage={!!animeList.prev_page}
-          />
-        </section>
+      <div className="container py-8 space-y-12">
+        <AnimeList initialAnimeList={animeList} />
+        <FeaturedCollection />
       </div>
     </div>
   )
