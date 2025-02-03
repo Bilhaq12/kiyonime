@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast } from "@/components/ui/use-toast"
 
 type AuthModalProps = {
   isOpen: boolean
@@ -14,19 +15,34 @@ type AuthModalProps = {
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [isLogin, setIsLogin] = useState(true)
-  const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { login, register } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (isLogin) {
-      await login(email, password)
-    } else {
-      await register(email, password)
+    try {
+      if (isLogin) {
+        await login(email, password)
+        toast({
+          title: "Login successful",
+          description: "Welcome back!",
+        })
+      } else {
+        await register(email, password)
+        toast({
+          title: "Registration successful",
+          description: "Please check your email to verify your account.",
+        })
+      }
+      onClose()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "An unknown error occurred",
+        variant: "destructive",
+      })
     }
-    onClose()
   }
 
   return (
@@ -36,12 +52,6 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           <DialogTitle>{isLogin ? "Login" : "Register"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            </div>
-          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
