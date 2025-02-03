@@ -1,9 +1,7 @@
-import type { AnimeResponse } from "@/types/anime"
-import type { AnimeDetail } from "@/types/animeDetail"
-import type { EpisodeDetail } from "@/types/episodeDetail"
+import type { AnimeResponse, AnimeDetail, EpisodeDetail } from "@/types/anime"
 
 export async function getAnimeList(page = 1): Promise<AnimeResponse> {
-  const response = await fetch(`https://api.lopyubibil.site/api/anoboy?page=${page}`)
+  const response = await fetch(`https://api.lopyubibil.site/api/anoboy?page=${page}`, { cache: "no-store" })
 
   if (!response.ok) {
     throw new Error("Failed to fetch anime list")
@@ -13,7 +11,7 @@ export async function getAnimeList(page = 1): Promise<AnimeResponse> {
 }
 
 export async function getAnimeDetail(param: string): Promise<AnimeDetail> {
-  const response = await fetch(`http://api.lopyubibil.site/api/anoboy/${param}`)
+  const response = await fetch(`https://api.lopyubibil.site/api/anoboy/${param}`, { cache: "no-store" })
 
   if (!response.ok) {
     throw new Error("Failed to fetch anime detail")
@@ -24,7 +22,7 @@ export async function getAnimeDetail(param: string): Promise<AnimeDetail> {
 }
 
 export async function getEpisodeDetail(param: string): Promise<EpisodeDetail> {
-  const response = await fetch(`https://api.lopyubibil.site/api/anoboy/${param}`)
+  const response = await fetch(`https://api.lopyubibil.site/api/anoboy/${param}`, { cache: "no-store" })
 
   if (!response.ok) {
     throw new Error("Failed to fetch episode detail")

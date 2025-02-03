@@ -1,65 +1,65 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { AnimeCard } from "@/components/anime-card"
 import { Button } from "@/components/ui/button"
-import { Error } from "@/components/ui/error"
-import { getAnimeList } from "@/lib/db"
-import type { AnimeItem } from "@/types/anime"
+import { getAnimeList } from "@/lib/api"
+import type { AnimeResponse, AnimeItem } from "@/types/anime"
 
-export function AnimeList() {
-  const [animeList, setAnimeList] = useState<AnimeItem[]>([])
-  const [page, setPage] = useState(1)
-  const [loading, setLoading] = useState(true)
-  const [hasMore, setHasMore] = useState(true)
+interface AnimeListProps {
+  initialAnimeList?: AnimeResponse
+}
+
+export function AnimeList({ initialAnimeList }: AnimeListProps) {
+  const [animeList, setAnimeList] = useState<AnimeItem[]>(initialAnimeList?.data || [])
+  const [page, setPage] = useState(2)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    loadAnime()
-  }, [])
-
-  const loadAnime = async () => {
-    if (loading && !hasMore) return
+  const loadMore = async () => {
+    if (loading) return
 
     setLoading(true)
     setError(null)
     try {
       const newAnimeList = await getAnimeList(page)
-      setAnimeList((prev) => [...prev, ...newAnimeList])
+      setAnimeList((prev) => [...prev, ...newAnimeList.data])
       setPage((prev) => prev + 1)
-      setHasMore(newAnimeList.length === 20)
     } catch (error) {
-      console.error("Failed to load anime:", error)
-      setError("Failed to load anime. Please try again later.")
+      console.error("Failed to load more anime:", error)
+      setError("Failed to load more anime. Please try again.")
     } finally {
       setLoading(false)
     }
   }
 
-  if (error) {
-    return <Error message={error} />
+  if (animeList.length === 0 && !loading && !error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-lg mb-4 text-white">No anime found.</p>
+      </div>
+    )
   }
 
   return (
     <section>
-      <h2 className="text-2xl font-bold mb-4">Recent Releases</h2>
-      {animeList.length === 0 && !loading ? (
-        <div className="text-center py-8">
-          <p className="text-lg mb-4">No anime found in the database.</p>
-          <p className="text-sm text-muted-foreground">
-            If you're an administrator, try running the database population script.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {animeList.map((anime) => (
-            <AnimeCard key={anime.id} {...anime} />
-          ))}
+      <h2 className="text-2xl font-bold mb-4 text-white">Recent Releases</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {animeList.map((anime) => (
+          <AnimeCard key={anime.param} {...anime} />
+        ))}
+      </div>
+      {error && (
+        <div className="text-center py-4">
+          <p className="text-red-500 mb-2">{error}</p>
+          <Button onClick={() => loadMore()} variant="secondary">
+            Retry
+          </Button>
         </div>
       )}
-      {hasMore && (
+      {!error && (
         <div className="mt-8 text-center">
-          <Button onClick={loadAnime} disabled={loading}>
+          <Button onClick={loadMore} disabled={loading}>
             {loading ? "Loading..." : "Load More"}
           </Button>
         </div>
