@@ -4,6 +4,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Header } from "@/components/header"
 import { AuthProvider } from "@/contexts/auth-context"
+import { Toaster } from "@/components/ui/toaster"
 import type React from "react"
 
 const inter = Inter({ subsets: ["latin"] })
@@ -26,8 +27,9 @@ export default function RootLayout({
             <Header />
             <main className="flex-grow">{children}</main>
             <footer className="py-4 text-center text-sm text-muted-foreground">
-              © 2025 Kiyocomics. All rights reserved.
+              © 2025 KiyoComisc. All rights reserved.
             </footer>
+            <Toaster />
           </ThemeProvider>
         </AuthProvider>
       </body>

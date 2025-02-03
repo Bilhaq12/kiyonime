@@ -2,18 +2,26 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Moon, Sun, Search, Menu, User } from "lucide-react"
+import { Moon, Sun, Menu } from "lucide-react"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { AuthModal } from "@/components/auth-modal"
 import { useAuth } from "@/contexts/auth-context"
+import { Search } from "@/components/search"
 
 export function Header() {
   const { theme, setTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const { user, logout } = useAuth()
+
+  const handleLogout = async () => {
+    try {
+      await logout()
+    } catch (error) {
+      console.error("Failed to logout:", error)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -27,17 +35,13 @@ export function Header() {
           <Link href="/" className="text-sm font-medium">
             Home
           </Link>
-          <Link href="/schedule" className="text-sm font-medium">
-            Schedule
-          </Link>
           <Link href="/browse" className="text-sm font-medium">
             Browse
           </Link>
         </nav>
         <div className="flex items-center ml-auto space-x-4">
-          <div className="relative hidden sm:block">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input type="search" placeholder="Search anime..." className="pl-8 w-[200px]" />
+          <div className="hidden sm:block">
+            <Search />
           </div>
           <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -45,12 +49,11 @@ export function Header() {
             <span className="sr-only">Toggle theme</span>
           </Button>
           {user ? (
-            <Button variant="ghost" onClick={logout}>
+            <Button variant="ghost" onClick={handleLogout}>
               Logout
             </Button>
           ) : (
             <Button variant="ghost" onClick={() => setIsAuthModalOpen(true)}>
-              <User className="mr-2 h-4 w-4" />
               Login
             </Button>
           )}
@@ -66,15 +69,11 @@ export function Header() {
             <Link href="/" className="text-sm font-medium">
               Home
             </Link>
-            <Link href="/schedule" className="text-sm font-medium">
-              Schedule
-            </Link>
             <Link href="/browse" className="text-sm font-medium">
               Browse
             </Link>
-            <div className="relative mt-2">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input type="search" placeholder="Search anime..." className="pl-8 w-full" />
+            <div className="mt-2">
+              <Search />
             </div>
           </nav>
         </div>
