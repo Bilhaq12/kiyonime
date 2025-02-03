@@ -1,13 +1,14 @@
 export interface AnimeItem {
   id: string
   title: string
-  synopsis: string
   thumbnail: string
-  status: "ongoing" | "completed"
-  created_at: string
+  param: string
+  upload_time: string
+  detail_url: string
 }
 
 export interface AnimeDetail extends AnimeItem {
+  synopsis: string
   episodes: EpisodeItem[]
 }
 
@@ -20,11 +21,6 @@ export interface EpisodeItem {
   video_embed_links: VideoLink[]
   video_mirrors: VideoLink[]
   video_direct_links: VideoDirectLink[]
-  created_at: string
-}
-
-export interface EpisodeDetail extends EpisodeItem {
-  anime: AnimeItem
 }
 
 export interface VideoLink {
