@@ -1,5 +1,6 @@
+"use client"
+
 import { createContext, useContext, useReducer } from "react"
-import { v4 as uuid } from "uuid"
 
 export type ToasterToast = {
   id: string
@@ -66,8 +67,12 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
 export const useToast = () => {
   const { state, dispatch } = useContext(ToastContext)
 
+  const generateId = () => {
+    return Math.random().toString(36).substring(2, 9)
+  }
+
   const addToast = (toast: Omit<ToasterToast, "id">) => {
-    const newToast = { ...toast, id: uuid() }
+    const newToast = { ...toast, id: generateId() }
     dispatch({ type: ActionType.ADD_TOAST, toast: newToast })
   }
 
