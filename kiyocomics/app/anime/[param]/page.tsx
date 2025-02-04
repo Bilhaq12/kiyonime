@@ -2,14 +2,30 @@ import { Suspense } from "react"
 import { getEpisodeDetail } from "@/lib/api"
 import { EpisodeDetailClient } from "./episode-detail-client"
 import Loading from "./loading"
+import type { Metadata } from "next"
 
-// Define the correct type for Next.js App Router page props
-type Props = {
-  params: { param: string }
-  searchParams: { [key: string]: string | string[] | undefined }
+interface PageParams {
+  param: string
 }
 
-export default async function EpisodeDetailPage({ params }: Props) {
+// Define proper static params generation
+export async function generateStaticParams(): Promise<PageParams[]> {
+  // This can be expanded to pre-render specific paths
+  return []
+}
+
+// Define proper metadata generation
+export async function generateMetadata({ params }: { params: PageParams }): Promise<Metadata> {
+  const episodeDetail = await getEpisodeDetail(params.param)
+
+  return {
+    title: episodeDetail.title,
+    description: episodeDetail.synopsis,
+  }
+}
+
+// Main page component with correct typing
+export default async function EpisodeDetailPage({ params }: { params: PageParams }) {
   const episodeDetail = await getEpisodeDetail(params.param)
 
   return (
@@ -17,14 +33,4 @@ export default async function EpisodeDetailPage({ params }: Props) {
       <EpisodeDetailClient initialEpisodeDetail={episodeDetail} />
     </Suspense>
   )
-}
-
-// Optionally, you can generate metadata for the page
-export async function generateMetadata({ params }: Props) {
-  const episodeDetail = await getEpisodeDetail(params.param)
-
-  return {
-    title: episodeDetail.title,
-    description: episodeDetail.synopsis,
-  }
 }
