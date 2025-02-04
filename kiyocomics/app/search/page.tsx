@@ -11,7 +11,7 @@ export default async function SearchPage({
 
   return (
     <div className="container py-8">
-      <h1 className="text-2xl font-bold mb-4">Search Results for "{query}"</h1>
+      <h1 className="text-2xl font-bold mb-4">Search Results for &quot;{query}&quot;</h1>
       {results.length === 0 ? (
         <p>No results found.</p>
       ) : (
@@ -24,4 +24,3 @@ export default async function SearchPage({
     </div>
   )
 }
-
