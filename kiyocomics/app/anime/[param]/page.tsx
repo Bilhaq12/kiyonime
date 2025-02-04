@@ -4,28 +4,12 @@ import { EpisodeDetailClient } from "./episode-detail-client"
 import Loading from "./loading"
 import type { Metadata } from "next"
 
-// Use the correct type for Next.js 15 page props
-type PageProps = {
+export default async function EpisodeDetailPage({
+  params,
+}: {
   params: { param: string }
-  searchParams: Record<string, string | string[] | undefined>
-}
-
-// Separate the data fetching logic
-async function getEpisodeData(param: string) {
-  return await getEpisodeDetail(param)
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const episodeDetail = await getEpisodeData(params.param)
-
-  return {
-    title: episodeDetail.title,
-    description: episodeDetail.synopsis,
-  }
-}
-
-export default async function EpisodeDetailPage({ params }: PageProps) {
-  const episodeDetail = await getEpisodeData(params.param)
+}) {
+  const episodeDetail = await getEpisodeDetail(params.param)
 
   return (
     <Suspense fallback={<Loading />}>
@@ -34,6 +18,19 @@ export default async function EpisodeDetailPage({ params }: PageProps) {
   )
 }
 
-// Enable dynamic params for this route
+export async function generateMetadata({
+  params,
+}: {
+  params: { param: string }
+}): Promise<Metadata> {
+  const episodeDetail = await getEpisodeDetail(params.param)
+
+  return {
+    title: episodeDetail.title,
+    description: episodeDetail.synopsis,
+  }
+}
+
 export const dynamic = "force-dynamic"
+
 
