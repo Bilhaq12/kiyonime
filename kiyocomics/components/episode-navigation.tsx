@@ -8,7 +8,7 @@ interface EpisodeNavigationProps {
 }
 
 export function EpisodeNavigation({ episodes, currentEpisode }: EpisodeNavigationProps) {
-  const currentIndex = episodes.findIndex((ep) => ep.nav_name === currentEpisode)
+  // const currentIndex = episodes.findIndex((ep) => ep.nav_name === currentEpisode)
 
   return (
     <div className="flex flex-wrap gap-2 mt-4">
@@ -26,4 +26,3 @@ export function EpisodeNavigation({ episodes, currentEpisode }: EpisodeNavigatio
     </div>
   )
 }
-
